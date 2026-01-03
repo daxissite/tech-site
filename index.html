@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechMaster | Кабинет Технологии</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #ffb300; /* Ламповый янтарный */
+            --text: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Боковое меню */
+        nav {
+            width: 250px;
+            background: #0a0a0a;
+            padding: 20px;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav h2 { color: var(--accent); font-size: 1.2rem; margin-bottom: 30px; }
+        
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background: var(--card-bg);
+            color: var(--accent);
+        }
+
+        /* Основной контент */
+        main { flex: 1; padding: 40px; overflow-y: auto; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
+
+        /* Чат (вкладка) */
+        #ai-tab { display: none; }
+        .chat-container { display: flex; flex-direction: column; height: 70vh; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; max-width: 80%; }
+        .user-msg { background: #333; align-self: flex-end; margin-left: auto; }
+        .ai-msg { background: var(--accent); color: #000; font-weight: 500; }
+
+        input {
+            background: #2a2a2a; border: 1px solid #444; color: white;
+            padding: 15px; border-radius: 10px; width: calc(100% - 30px);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>Мастерская 2.0</h2>
+    <a href="#" onclick="showTab('main')" class="active">Главная</a>
+    <a href="#" onclick="showTab('safety')">Техника безопасности</a>
+    <a href="#" onclick="showTab('files')">Чертежи и 3D</a>
+    <a href="#" onclick="showTab('ai')">🤖 ИИ-Помощник</a>
+</nav>
+
+<main>
+    <section id="main-tab">
+        <h1>Рабочее пространство</h1>
+        <div class="grid">
+            <div class="card">
+                <h3>Проекты сегодня</h3>
+                <p>8А: Выпиливание лобзиком<br>9Б: Основы Arduino</p>
+            </div>
+            <div class="card">
+                <h3>Статус инструментов</h3>
+                <p>✅ 3D-принтер готов<br>⚠️ Сверлильный станок (ТО)</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai-tab">
+        <h1>Gemini AI Assistant</h1>
+        <div class="card chat-container">
+            <div id="chat-window"></div>
+            <input type="text" id="ai-input" placeholder="Спроси как настроить 3D-принтер или составить план урока..." onkeypress="if(event.key==='Enter') sendToAI()">
+        </div>
+    </section>
+</main>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(tabId + '-tab').style.display = 'block';
+        
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    async function sendToAI() {
+        const input = document.getElementById('ai-input');
+        const window = document.getElementById('chat-window');
+        const text = input.value;
+        if(!text) return;
+
+        window.innerHTML += `<div class="msg user-msg">${text}</div>`;
+        input.value = '';
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await response.json();
+            window.innerHTML += `<div class="msg ai-msg">${data.text}</div>`;
+        } catch (e) {
+            window.innerHTML += `<div class="msg" style="color:red">Ошибка связи с BackEnd</div>`;
+        }
+        window.scrollTop = window.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
