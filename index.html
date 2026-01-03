@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Техно-Хаб: Кабинет Учителя</title>
+    <title>Техно-Хаб | Кабинет Учителя</title>
     <style>
-        /* Стиль: Тёмная ламповая минималистика */
         :root {
-            --bg: #0f0f0f;
-            --panel: #1a1a1a;
-            --accent: #ff9800; /* Теплый янтарный свет */
-            --text: #e0e0e0;
-            --border: #333;
+            --bg: #0d0d0d;
+            --panel: #161616;
+            --accent: #ff9100;
+            --text: #e5e5e5;
+            --border: #2a2a2a;
         }
 
         body {
@@ -21,35 +20,44 @@
             margin: 0;
             display: flex;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* Навигация справа (как просил) */
+        /* Меню справа */
         nav {
-            width: 240px;
+            width: 260px;
             background: var(--panel);
             border-left: 1px solid var(--border);
-            order: 2; /* Перемещает меню вправо */
+            order: 2;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
         }
 
-        nav h2 { color: var(--accent); font-size: 1.1rem; text-align: center; margin-bottom: 30px; }
+        nav h2 { 
+            color: var(--accent); 
+            font-size: 1.2rem; 
+            text-align: center; 
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
 
         nav button {
             background: transparent;
             border: 1px solid transparent;
-            color: var(--text);
-            padding: 12px;
+            color: #999;
+            padding: 14px;
             text-align: left;
             cursor: pointer;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             transition: 0.3s;
+            font-size: 0.95rem;
         }
 
         nav button:hover, nav button.active {
-            background: #252525;
+            background: #222;
             border-color: var(--accent);
             color: var(--accent);
         }
@@ -57,139 +65,165 @@
         /* Контент слева */
         main {
             flex: 1;
-            padding: 30px;
+            padding: 40px;
             order: 1;
             overflow-y: auto;
         }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2.2rem; margin-bottom: 20px; color: var(--accent); }
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
         .card {
             background: var(--panel);
             border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 25px;
+            border-radius: 15px;
             transition: 0.3s;
         }
 
-        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
-
-        .card a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card h3 { margin-top: 0; color: #fff; }
+        .card p { color: #aaa; font-size: 0.9rem; }
+        .card a { color: var(--accent); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .card a:hover { border-bottom: 1px solid var(--accent); }
 
         /* Чат */
-        .chat-wrapper {
+        .chat-container {
             background: var(--panel);
-            border-radius: 12px;
-            height: 80vh;
+            border-radius: 20px;
+            height: 75vh;
             display: flex;
             flex-direction: column;
             border: 1px solid var(--border);
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        #chat-output {
+        #chat-window {
             flex: 1;
-            padding: 20px;
+            padding: 25px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
-        .msg { padding: 10px 15px; border-radius: 10px; max-width: 85%; line-height: 1.5; }
-        .user-msg { background: #333; align-self: flex-end; }
-        .ai-msg { background: rgba(255,152,0,0.1); border: 1px solid var(--accent); align-self: flex-start; }
+        .msg { padding: 12px 18px; border-radius: 15px; max-width: 80%; line-height: 1.6; font-size: 0.95rem; }
+        .user-msg { background: #2b2b2b; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .ai-msg { background: rgba(255,145,0,0.1); border: 1px solid rgba(255,145,0,0.3); align-self: flex-start; border-bottom-left-radius: 2px; }
 
-        .chat-input-area {
-            padding: 15px;
+        .chat-footer {
+            padding: 20px;
             border-top: 1px solid var(--border);
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         input {
             flex: 1;
-            background: #222;
+            background: #0d0d0d;
             border: 1px solid var(--border);
             color: white;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 12px;
             outline: none;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); }
+
+        .send-btn { 
+            background: var(--accent); 
+            border: none; 
+            padding: 0 25px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            color: #000;
         }
 
-        button.send { background: var(--accent); border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-
-        .loader { display: none; color: var(--accent); font-size: 0.8rem; padding-left: 20px; margin-bottom: 10px; }
+        .loader { display: none; color: var(--accent); font-size: 0.85rem; padding: 0 25px 10px; font-style: italic; }
     </style>
 </head>
 <body>
 
 <nav>
-    <h2>Мастерская ИИ</h2>
-    <button class="active" onclick="showTab('home')">Главная</button>
-    <button onclick="showTab('tools')">Инструменты</button>
-    <button onclick="showTab('ai')">Чат с Gemini</button>
+    <h2>⚙️ ТЕХНО-КЛАСС</h2>
+    <button class="active" onclick="showTab('home')">🏠 Рабочий стол</button>
+    <button onclick="showTab('tools')">📐 Инструменты</button>
+    <button onclick="showTab('ai')">🤖 ИИ-Ассистент</button>
 </nav>
 
 <main>
     <div id="home" class="tab-content active">
-        <h1>Рабочий стол учителя</h1>
+        <h1>Панель учителя</h1>
         <div class="card-grid">
             <div class="card">
-                <h3>Текстовые редакторы</h3>
-                <p>Google Docs, Notion, Word Online.</p>
-                <a href="https://docs.google.com" target="_blank">Перейти →</a>
+                <h3>Документы</h3>
+                <p>Рабочие программы, КТП и отчетность в облаке.</p>
+                <a href="https://docs.google.com" target="_blank">Открыть редактор →</a>
             </div>
             <div class="card">
-                <h3>ИИ Сервисы</h3>
-                <p>ChatGPT, Claude, Perplexity.</p>
-                <a href="https://www.perplexity.ai" target="_blank">Перейти →</a>
+                <h3>Заметки и База</h3>
+                <p>Храните инструкции и идеи для проектов в Notion.</p>
+                <a href="https://www.notion.so" target="_blank">Перейти →</a>
+            </div>
+            <div class="card">
+                <h3>Визуализация</h3>
+                <p>Создание схем и плакатов для мастерской.</p>
+                <a href="https://www.canva.com" target="_blank">Открыть Canva →</a>
             </div>
         </div>
     </div>
 
     <div id="tools" class="tab-content">
-        <h1>3D и Черчение</h1>
+        <h1>3D и Онлайн-моделирование</h1>
         <div class="card-grid">
             <div class="card">
                 <h3>Tinkercad</h3>
-                <p>Легкое 3D моделирование для учеников.</p>
-                <a href="https://www.tinkercad.com" target="_blank">Открыть →</a>
+                <p>Простое 3D-моделирование для школьников 5-7 классов.</p>
+                <a href="https://www.tinkercad.com" target="_blank">Начать проект →</a>
             </div>
             <div class="card">
                 <h3>Onshape</h3>
-                <p>Профессиональный САПР в браузере.</p>
-                <a href="https://www.onshape.com" target="_blank">Открыть →</a>
+                <p>Полноценный САПР. Подходит для старших классов.</p>
+                <a href="https://www.onshape.com" target="_blank">Запустить CAD →</a>
+            </div>
+            <div class="card">
+                <h3>Wokwi</h3>
+                <p>Симулятор Arduino и электроники онлайн.</p>
+                <a href="https://wokwi.com" target="_blank">Симулятор →</a>
             </div>
         </div>
     </div>
 
     <div id="ai" class="tab-content">
-        <h1>Ассистент Gemini 1.5 Flash</h1>
-        <div class="chat-wrapper">
-            <div id="chat-output">
-                <div class="msg ai-msg">Привет! Я готов помочь с чертежами, планами уроков или теорией. Что подсказать?</div>
+        <h1>ИИ-Помощник Groq</h1>
+        <div class="chat-container">
+            <div id="chat-window">
+                <div class="msg ai-msg">Приветствую! Я работаю на базе Llama 3 (через Groq). Чем помочь в мастерской сегодня?</div>
             </div>
-            <div id="loader" class="loader">ИИ обдумывает ответ...</div>
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Введите вопрос..." onkeydown="if(event.key==='Enter') sendMsg()">
-                <button class="send" onclick="sendMsg()">Отправить</button>
+            <div id="loader" class="loader">Анализирую данные...</div>
+            <div class="chat-footer">
+                <input type="text" id="user-input" placeholder="Напиши вопрос учителю..." onkeydown="if(event.key==='Enter') sendMsg()">
+                <button class="send-btn" onclick="sendMsg()">Отправить</button>
             </div>
         </div>
     </div>
 </main>
 
 <script>
-    // Твой ключ API (уже вставлен в кавычки)
-    const KEY = "AIzaSyCMwiakZUy7olCszQ_A_hvfj3kMOhRjaR0";
+    // --- ВСТАВЬТЕ ВАШ КЛЮЧ GROQ НИЖЕ ---
+    const GROQ_KEY = "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";
 
     function showTab(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -200,42 +234,48 @@
 
     async function sendMsg() {
         const input = document.getElementById('user-input');
-        const output = document.getElementById('chat-output');
+        const window = document.getElementById('chat-window');
         const loader = document.getElementById('loader');
         const text = input.value.trim();
 
         if (!text) return;
 
-        // Показываем сообщение пользователя
-        output.innerHTML += `<div class="msg user-msg">${text}</div>`;
+        // Добавляем сообщение пользователя
+        window.innerHTML += `<div class="msg user-msg">${text}</div>`;
         input.value = '';
-        output.scrollTop = output.scrollHeight;
+        window.scrollTop = window.scrollHeight;
         loader.style.display = 'block';
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${GROQ_KEY}`,
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Ты ассистент учителя технологии. Отвечай на русском. " + text }] }]
+                    model: "llama-3.3-70b-versatile",
+                    messages: [
+                        { role: "system", content: "Ты опытный учитель технологии в российской школе. Ты помогаешь с планами уроков, инструкциями по ТБ, столярным и слесарным делом, а также с робототехникой. Отвечай на русском языке." },
+                        { role: "user", content: text }
+                    ]
                 })
             });
 
             const data = await response.json();
             
-            if (data.candidates && data.candidates[0].content) {
-                const aiResponse = data.candidates[0].content.parts[0].text;
-                // Форматируем переносы строк и жирный текст
-                const htmlResponse = aiResponse.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-                output.innerHTML += `<div class="msg ai-msg">${htmlResponse}</div>`;
+            if (data.choices && data.choices[0].message) {
+                const aiText = data.choices[0].message.content;
+                const formatted = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                window.innerHTML += `<div class="msg ai-msg">${formatted}</div>`;
             } else {
-                throw new Error("Пустой ответ. Возможно, ограничения региона.");
+                throw new Error("Ошибка в структуре ответа API");
             }
         } catch (err) {
-            output.innerHTML += `<div class="msg ai-msg" style="color: #ff6b6b">Ошибка: ${err.message}. Попробуйте использовать VPN, если вы в РФ.</div>`;
+            window.innerHTML += `<div class="msg ai-msg" style="color: #ff6b6b"><b>Ошибка:</b> ${err.message}. Проверьте правильность API-ключа.</div>`;
         } finally {
             loader.style.display = 'none';
-            output.scrollTop = output.scrollHeight;
+            window.scrollTop = window.scrollHeight;
         }
     }
 </script>
