@@ -1,69 +1,66 @@
-const API_KEY = AIzaSyCMwiakZUy7olCszQ_A_hvfj3kMOhRjaR0; 
+const API_KEY = "AIzaSyCMwiakZUy7olCszQ_A_hvfj3kMOhRjaR0"; 
 
-    function openTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        // Фикс для активации кнопки
-        const buttons = document.querySelectorAll('nav button');
-        buttons.forEach(btn => {
-            if(btn.getAttribute('onclick').includes(tabName)) btn.classList.add('active');
-        });
+function openTab(tabName) { 
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); 
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active')); 
+    document.getElementById(tabName).classList.add('active'); 
+    
+    const buttons = document.querySelectorAll('nav button'); 
+    buttons.forEach(btn => { 
+        if(btn.getAttribute('onclick').includes(tabName)) btn.classList.add('active'); 
+    }); 
+} 
+
+async function sendMessage() { 
+    const inputField = document.getElementById('user-input'); 
+    const history = document.getElementById('chat-history'); 
+    const loader = document.getElementById('loader'); 
+    const userText = inputField.value.trim(); 
+
+    if (!userText) return; 
+
+    // Добавляем сообщение пользователя в интерфейс
+    history.innerHTML += `<div class="message user-msg">${userText}</div>`; 
+    inputField.value = ''; 
+    history.scrollTop = history.scrollHeight; 
+    loader.style.display = 'block'; 
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`; 
+
+    try { 
+        const response = await fetch(url, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }] }) 
+        }); 
+
+        if (!response.ok) { 
+            const errorData = await response.json(); 
+            console.error("Детали ошибки:", errorData); 
+            throw new Error(errorData.error ? errorData.error.message : "Ошибка доступа к API"); 
+        } 
+
+        const data = await response.json(); 
+
+        if (data.candidates && data.candidates[0].content) { 
+            const aiText = data.candidates[0].content.parts[0].text; 
+            // Простая замена Markdown на HTML теги
+            const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>'); 
+            history.innerHTML += `<div class="message ai-msg">${formattedText}</div>`; 
+        } else { 
+            throw new Error("Пустой ответ от ИИ. Возможно, сработал фильтр контента."); 
+        } 
+    } catch (error) { 
+        console.error("Ошибка запроса:", error); 
+        let errorMessage = "Не удалось получить ответ."; 
+        if (error.message.includes("Failed to fetch")) { 
+            errorMessage = "Ошибка сети. Если вы в РФ, API Gemini требует VPN для работы."; 
+        } else { 
+            errorMessage = `Ошибка: ${error.message}`; 
+        } 
+        history.innerHTML += `<div class="message error-msg" style="color: #ff5252; background: rgba(255,82,82,0.1); padding: 10px; border-radius: 8px;">${errorMessage}</div>`; 
+    } finally { 
+        loader.style.display = 'none'; 
+        history.scrollTop = history.scrollHeight; 
     }
-
-    async function sendMessage() {
-        const inputField = document.getElementById('user-input');
-        const history = document.getElementById('chat-history');
-        const loader = document.getElementById('loader');
-        const userText = inputField.value.trim();
-
-        if (!userText) return;
-
-        history.innerHTML += `<div class="message user-msg">${userText}</div>`;
-        inputField.value = '';
-        history.scrollTop = history.scrollHeight;
-        loader.style.display = 'block';
-
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: userText }] }]
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Детали ошибки:", errorData);
-                throw new Error(errorData.error ? errorData.error.message : "Ошибка доступа к API");
-            }
-
-            const data = await response.json();
-            
-            if (data.candidates && data.candidates[0].content) {
-                const aiText = data.candidates[0].content.parts[0].text;
-                const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-                history.innerHTML += `<div class="message ai-msg">${formattedText}</div>`;
-            } else {
-                throw new Error("Пустой ответ от ИИ. Возможно, сработал фильтр контента.");
-            }
-
-        } catch (error) {
-            console.error("Ошибка запроса:", error);
-            let errorMessage = "Не удалось получить ответ.";
-            
-            if (error.message.includes("Failed to fetch")) {
-                errorMessage = "Ошибка сети. Если вы в РФ, API Gemini требует VPN для работы.";
-            } else {
-                errorMessage = `Ошибка: ${error.message}`;
-            }
-            
-            history.innerHTML += `<div class="message error-msg" style="background:rgba(255,0,0,0.1); padding:10px; border-radius:10px; margin-top:10px;">${errorMessage}</div>`;
-        } finally {
-            loader.style.display = 'none';
-            history.scrollTop = history.scrollHeight;
-        }
-    }
+}
